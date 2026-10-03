@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="only light">
+<meta name="supported-color-schemes" content="light">
+<title>Verificador de afirmaciones</title>
+<meta name="description" content="Escribí una afirmación y un medidor te muestra si es verdadera, falsa o dudosa, con las razones y las fuentes consultadas.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Verificador de afirmaciones">
+<meta property="og:description" content="¿Es verdad o es fake news? Escribí una afirmación y mirá qué dice la evidencia.">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#0B2A5B">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔎</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  html{
+    color-scheme:only light;
+    background:#FFFFFF;
+  }
+
+  :root{
+    color-scheme:only light;
+    --papel:#FFFFFF;
+    --panel:#FFFFFF;
+    --tinta:#16233A;
+    --tinta-suave:#5C6B85;
+    --azul-profundo:#0B2A5B;
+    --azul-medio:#1D4E9B;
+    --azul-claro:#4A7FC1;
+    --linea:#C9D2DE;
+    --verdadera:#1E7A5F;
+    --falsa:#AE3A32;
+    --dudosa:#B5851B;
+    --display:"IBM Plex Sans Condensed","Arial Narrow",system-ui,sans-serif;
+    --cuerpo:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,"Courier New",monospace;
+  }
+
+  *{box-sizing:border-box}
+
+  body{
+    margin:0;
+    min-height:100vh;
+    padding:28px 18px 56px;
+    background:#FFFFFF;
+    color:var(--tinta);
+    font-family:var(--cuerpo);
+    font-size:16px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .hoja{max-width:660px;margin:0 auto}
+
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--azul-claro);
+    margin:0 0 10px;
+  }
+
+  h1{
+    font-family:var(--display);
+    font-weight:700;
+    font-size:clamp(34px,8vw,52px);
+    line-height:.98;
+    letter-spacing:-.015em;
+    color:var(--azul-profundo);
+    margin:0 0 12px;
+  }
+
+  .lede{margin:0 0 26px;color:var(--tinta-suave);max-width:46ch}
+
+  .panel{
+    background:var(--panel);
+    border:1px solid var(--linea);
+    border-radius:3px;
+    padding:20px;
+    margin-bottom:20px;
+  }
+
+  label.campo{
+    display:block;
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--azul-medio);
+    margin-bottom:9px;
+  }
+
+  textarea{
+    width:100%;
+    min-height:130px;
+    resize:vertical;
+    padding:13px;
+    -webkit-appearance:none;
+    appearance:none;
+    border:1px solid var(--linea);
+    border-radius:2px;
+    background:#FFFFFF;
+    background-color:#FFFFFF;
+    color:var(--tinta);
+    -webkit-text-fill-color:var(--tinta);
+    font-family:var(--cuerpo);
+    font-size:16px;
+    line-height:1.5;
+  }
+  textarea:focus{outline:2px solid var(--azul-medio);outline-offset:1px;background:#FFFFFF}
+  textarea::placeholder{color:#8B99AE;-webkit-text-fill-color:#8B99AE;opacity:1}
+
+  @media (prefers-color-scheme:dark){
+    html,body,.panel,textarea{background:#FFFFFF;background-color:#FFFFFF;color:var(--tinta);-webkit-text-fill-color:var(--tinta)}
+    button.analizar{background:var(--azul-medio);background-color:var(--azul-medio);color:#FFFFFF;-webkit-text-fill-color:#FFFFFF}
+  }
+
+  .fila{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:14px;
+    flex-wrap:wrap;
+    margin-top:13px;
+  }
+
+  .contador{font-family:var(--mono);font-size:12px;color:var(--tinta-suave)}
+
+  .opcion{display:flex;align-items:center;gap:7px;font-size:14px;color:var(--tinta-suave);cursor:pointer}
+  .opcion input{accent-color:var(--tinta);width:15px;height:15px;cursor:pointer}
+
+  button.analizar{
+    font-family:var(--display);
+    font-weight:700;
+    font-size:17px;
+    letter-spacing:.01em;
+    padding:12px 24px;
+    -webkit-appearance:none;
+    appearance:none;
+    border:none;
+    border-radius:2px;
+    background:var(--azul-medio);
+    background-color:var(--azul-medio);
+    color:#FFFFFF;
+    -webkit-text-fill-color:#FFFFFF;
+    cursor:pointer;
+    transition:background .15s ease;
+  }
+  button.analizar:hover:not(:disabled){background:var(--azul-profundo)}
+  button.analizar:disabled{opacity:.4;cursor:not-allowed}
+  button.analizar:focus-visible{outline:2px solid var(--tinta);outline-offset:3px}
+
+  .ejemplos{margin-top:18px;padding-top:16px;border-top:1px dashed var(--linea)}
+  .ejemplos p{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--azul-claro);margin:0 0 9px}
+  .chip{
+    font-family:var(--cuerpo);
+    font-size:13px;
+    text-align:left;
+    padding:7px 11px;
+    margin:0 6px 6px 0;
+    border:1px solid var(--linea);
+    border-radius:2px;
+    background:transparent;
+    color:var(--tinta-suave);
+    cursor:pointer;
+  }
+  .chip:hover{border-color:var(--tinta);color:var(--tinta)}
+
+  /* ---- el dial ---- */
+  #resultado[hidden]{display:none}
+  .dial{display:block;margin:4px auto 0;width:100%;max-width:320px;height:auto}
+  .aguja{
+    transform-origin:150px 150px;
+    transform:rotate(-90deg);
+    transition:transform 1.15s cubic-bezier(.34,1.32,.5,1);
+  }
+  .escaneando .aguja{animation:barrido 1.5s ease-in-out infinite;transition:none}
+  @keyframes barrido{0%,100%{transform:rotate(-72deg)}50%{transform:rotate(72deg)}}
+
+  .marcas text{font-family:var(--mono);font-size:10px;letter-spacing:.1em;fill:var(--tinta-suave)}
+
+  .veredicto{
+    font-family:var(--display);
+    font-weight:700;
+    font-size:clamp(30px,7.5vw,42px);
+    line-height:1;
+    text-transform:uppercase;
+    letter-spacing:.005em;
+    text-align:center;
+    margin:6px 0 4px;
+  }
+  .tipo{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--azul-claro);
+    text-align:center;
+    margin:0 0 22px;
+  }
+
+  .resumen{margin:0 0 18px;font-size:17px}
+
+  h2.sub{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--azul-medio);
+    font-weight:400;
+    margin:0 0 9px;
+    padding-top:16px;
+    border-top:1px solid var(--linea);
+  }
+
+  ul.razones{list-style:none;margin:0 0 4px;padding:0}
+  ul.razones li{position:relative;padding-left:20px;margin-bottom:8px}
+  ul.razones li::before{content:"—";position:absolute;left:0;color:var(--tinta-suave);font-family:var(--mono)}
+
+  ul.fuentes{list-style:none;margin:0;padding:0;font-size:15px}
+  ul.fuentes li{margin-bottom:7px}
+  ul.fuentes a{color:var(--tinta);text-decoration-color:var(--linea);text-underline-offset:3px}
+  ul.fuentes a:hover{text-decoration-color:var(--tinta)}
+
+  .aviso{
+    background:transparent;
+    border:1px dashed var(--linea);
+    border-radius:3px;
+    padding:15px 17px;
+    font-size:14px;
+    color:var(--tinta-suave);
+  }
+  .aviso strong{color:var(--azul-medio);font-weight:600}
+
+  .error{border-left:3px solid var(--falsa)}
+  .error h2{font-family:var(--display);font-size:20px;color:var(--azul-profundo);margin:0 0 6px}
+
+  @media (prefers-reduced-motion:reduce){
+    .aguja{transition:none}
+    .escaneando .aguja{animation:none}
+  }
+</style>
+</head>
+<body>
+<main class="hoja">
+
+  <p class="eyebrow">Proyecto de ciencias</p>
+  <h1>Verificador de afirmaciones</h1>
+  <p class="lede">Pegá una afirmación y el sistema estima si es verdadera, falsa o dudosa, y explica en qué se basa.</p>
+
+  <section class="panel">
+    <label class="campo" for="texto">Afirmación a analizar</label>
+    <textarea maxlength="500" id="texto" placeholder="Ej: El agua hierve a 100 °C a nivel del mar."></textarea>
+
+    <div class="fila">
+      <span class="contador"><span id="cuenta">0</span> caracteres</span>
+      <label class="opcion"><input type="checkbox" id="buscar" checked> Buscar fuentes en la web</label>
+    </div>
+
+    <div class="fila">
+      <button class="analizar" id="btn" disabled>Analizar</button>
+      <span class="contador" id="estado"></span>
+    </div>
+
+    <div class="ejemplos">
+      <p>Probá con estos</p>
+      <button class="chip">La Gran Muralla China se ve a simple vista desde la Luna.</button>
+      <button class="chip">Los humanos usamos solo el 10 % de nuestro cerebro.</button>
+      <button class="chip">El chocolate amargo es mejor para la salud que el chocolate con leche.</button>
+    </div>
+  </section>
+
+  <section class="panel" id="resultado" hidden>
+    <svg class="dial" viewBox="0 0 300 178" role="img" aria-labelledby="dialTitulo">
+      <title id="dialTitulo">Medidor de credibilidad</title>
+
+      <path d="M30,150 A120,120 0 0 1 90,46.1" fill="none" stroke="#AE3A32" stroke-width="13" opacity=".9"/>
+      <path d="M90,46.1 A120,120 0 0 1 210,46.1" fill="none" stroke="#B5851B" stroke-width="13" opacity=".9"/>
+      <path d="M210,46.1 A120,120 0 0 1 270,150" fill="none" stroke="#1E7A5F" stroke-width="13" opacity=".9"/>
+
+      <g id="ticks" stroke="#16233A" stroke-width="1" opacity=".35"></g>
+
+      <g class="marcas">
+        <text x="30" y="170" text-anchor="start">FALSA</text>
+        <text x="150" y="30" text-anchor="middle">DUDOSA</text>
+        <text x="270" y="170" text-anchor="end">VERDADERA</text>
+      </g>
+
+      <g class="aguja" id="aguja">
+        <line x1="150" y1="150" x2="150" y2="52" stroke="#16233A" stroke-width="3" stroke-linecap="round"/>
+      </g>
+      <circle cx="150" cy="150" r="8" fill="#16233A"/>
+      <circle cx="150" cy="150" r="3" fill="#E9EDF2"/>
+    </svg>
+
+    <p class="veredicto" id="veredicto">—</p>
+    <p class="tipo" id="tipo"></p>
+
+    <p class="resumen" id="resumen"></p>
+
+    <div id="bloqueRazones" hidden>
+      <h2 class="sub">En qué se basa</h2>
+      <ul class="razones" id="razones"></ul>
+    </div>
+
+    <div id="bloqueFuentes" hidden>
+      <h2 class="sub">Fuentes consultadas</h2>
+      <ul class="fuentes" id="fuentes"></ul>
+    </div>
+  </section>
+
+  <section class="panel aviso">
+    <strong>Cómo leer este resultado.</strong> La página no "sabe" la verdad: un modelo de inteligencia artificial estima qué tan probable es la afirmación según lo que aprendió y, si activás la búsqueda, según lo que encuentra en la web. Puede equivocarse, sobre todo con datos muy nuevos, locales o específicos. Por eso la aguja se mueve en una escala: casi nada es 0 o 100. Revisá siempre las fuentes antes de dar algo por cierto.
+  </section>
+
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const texto = $("texto"), btn = $("btn"), cuenta = $("cuenta"), estado = $("estado");
+const resultado = $("resultado"), aguja = $("aguja");
+
+/* marcas de la escala cada 10 unidades */
+(function dibujarTicks(){
+  const g = $("ticks");
+  for (let i = 0; i <= 100; i += 10){
+    const a = Math.PI - (i/100) * Math.PI;
+    const r1 = 108, r2 = i % 50 === 0 ? 96 : 101;
+    const x1 = 150 + r1*Math.cos(a), y1 = 150 - r1*Math.sin(a);
+    const x2 = 150 + r2*Math.cos(a), y2 = 150 - r2*Math.sin(a);
+    const l = document.createElementNS("http://www.w3.org/2000/svg","line");
+    l.setAttribute("x1",x1.toFixed(1)); l.setAttribute("y1",y1.toFixed(1));
+    l.setAttribute("x2",x2.toFixed(1)); l.setAttribute("y2",y2.toFixed(1));
+    g.appendChild(l);
+  }
+})();
+
+texto.addEventListener("input", () => {
+  cuenta.textContent = texto.value.length;
+  btn.disabled = texto.value.trim().length < 3;
+});
+
+texto.addEventListener("keydown", e => {
+  if ((e.metaKey || e.ctrlKey) && e.key === "Enter" && !btn.disabled) analizar();
+});
+
+document.querySelectorAll(".chip").forEach(c => {
+  c.addEventListener("click", () => {
+    texto.value = c.textContent.trim();
+    texto.dispatchEvent(new Event("input"));
+    texto.focus();
+  });
+});
+
+btn.addEventListener("click", analizar);
+
+function moverAguja(puntaje){
+  const p = Math.max(0, Math.min(100, Number(puntaje) || 0));
+  aguja.style.transform = `rotate(${(-90 + p * 1.8).toFixed(1)}deg)`;
+}
+
+async function analizar(){
+  const afirmacion = texto.value.trim();
+  const conBusqueda = $("buscar").checked;
+
+  btn.disabled = true;
+  estado.textContent = conBusqueda ? "Buscando y analizando…" : "Analizando…";
+  resultado.hidden = false;
+  resultado.classList.add("escaneando");
+  resultado.classList.remove("error");
+  $("veredicto").textContent = "…";
+  $("veredicto").style.color = "var(--tinta-suave)";
+  $("tipo").textContent = "";
+  $("resumen").textContent = "";
+  $("bloqueRazones").hidden = true;
+  $("bloqueFuentes").hidden = true;
+  resultado.scrollIntoView({behavior:"smooth", block:"start"});
+
+  try {
+    const r = await fetch("/api/verificar", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ afirmacion, buscar: conBusqueda })
+    });
+    let data;
+    try { data = await r.json(); } catch { throw new Error("respuesta inválida del servidor"); }
+    if (!r.ok || data.error) throw new Error(data.error || "error del servidor");
+    mostrar(data);
+  } catch (err) {
+    mostrarError(err);
+  } finally {
+    resultado.classList.remove("escaneando");
+    btn.disabled = false;
+    estado.textContent = "";
+  }
+}
+
+function mostrar(d){
+  const v = String(d.veredicto || "Dudosa");
+  const color = /verdad/i.test(v) ? "var(--verdadera)"
+              : /fals/i.test(v)   ? "var(--falsa)"
+              : "var(--dudosa)";
+
+  moverAguja(d.puntaje);
+
+  $("veredicto").textContent = v;
+  $("veredicto").style.color = color;
+  $("tipo").textContent = d.tipo ? `${d.tipo} · confianza ${Math.round(d.puntaje)}/100` : "";
+  $("resumen").textContent = d.resumen || "";
+
+  const razones = Array.isArray(d.razones) ? d.razones.filter(Boolean) : [];
+  $("razones").innerHTML = razones.map(t => `<li></li>`).join("");
+  [...$("razones").children].forEach((li, i) => li.textContent = razones[i]);
+  $("bloqueRazones").hidden = razones.length === 0;
+
+  const fuentes = Array.isArray(d.fuentes) ? d.fuentes.filter(f => f && f.url) : [];
+  const ul = $("fuentes");
+  ul.innerHTML = "";
+  fuentes.forEach(f => {
+    const li = document.createElement("li");
+    const a = document.createElement("a");
+    a.href = f.url; a.target = "_blank"; a.rel = "noopener noreferrer";
+    a.textContent = f.titulo || f.url;
+    li.appendChild(a);
+    ul.appendChild(li);
+  });
+  $("bloqueFuentes").hidden = fuentes.length === 0;
+}
+
+function mostrarError(err){
+  moverAguja(50);
+  resultado.classList.add("error");
+  $("veredicto").textContent = "Sin resultado";
+  $("veredicto").style.color = "var(--falsa)";
+  $("tipo").textContent = "";
+  $("resumen").textContent = "El análisis no se completó. Probá de nuevo, acortá la afirmación o desactivá la búsqueda web. Detalle técnico: " + err.message;
+  $("bloqueRazones").hidden = true;
+  $("bloqueFuentes").hidden = true;
+}
+</script>
+</body>
+</html>
