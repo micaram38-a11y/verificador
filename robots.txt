@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://verificador-de-afirmaciones.netlify.app/sitemap.xml
