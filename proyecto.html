@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Detector de fake news · Presentación del proyecto</title>
+<meta name="description" content="Presentación del proyecto Detector de fake news: qué es, por qué existe, cómo funciona y con qué tecnología se hizo.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔎</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans+Condensed:wght@700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --tinta:#0B2A5B; --texto:#1E2A3D; --suave:#4A5A73; --alerta:#B03A2E; --ok:#2E7D5B; --duda:#B8892B;
+    --fondo:#F6F8FB; --papel:#FFFFFF; --linea:#D5DCE7;
+    --display:"IBM Plex Sans Condensed","Arial Narrow",system-ui,sans-serif;
+    --cuerpo:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,"Courier New",monospace;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --tinta:#9CC0FF; --texto:#E6ECF5; --suave:#A9B6CC; --alerta:#FF8A7A; --fondo:#0E1522; --papel:#151F30; --linea:#2A3850; }
+  }
+  *,*::before,*::after{box-sizing:inherit}
+  body{margin:0;background:var(--fondo);color:var(--texto);font-family:var(--cuerpo);font-size:17px;line-height:1.55}
+  main{max-width:640px;margin:0 auto;padding:28px 20px 48px}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--suave);margin:0 0 10px}
+  h1{font-family:var(--display);font-size:clamp(40px,11vw,60px);line-height:.95;margin:0 0 12px;color:var(--tinta);letter-spacing:-.5px}
+  .lead{font-size:19px;margin:0 0 24px;color:var(--texto)}
+  .lead strong{color:var(--alerta)}
+  .card{background:var(--papel);border:1px solid var(--linea);border-radius:10px;padding:20px 20px 18px;margin:0 0 14px}
+  h2{font-family:var(--display);font-size:24px;line-height:1.1;margin:0 0 8px;color:var(--tinta)}
+  p{margin:0 0 8px} p:last-child{margin-bottom:0}
+  ol,ul{margin:0;padding-left:22px} li{margin:0 0 6px} li:last-child{margin:0}
+  .medidor{display:flex;gap:8px;margin:12px 0 0;flex-wrap:wrap}
+  .medidor span{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:4px 10px;border-radius:999px;color:#fff}
+  .f{background:#B03A2E}.d{background:#9A7220}.v{background:#2E7D5B}
+  .tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+  .tags span{font-family:var(--mono);font-size:13px;border:1px solid var(--linea);border-radius:6px;padding:4px 9px;color:var(--texto)}
+  .cta{display:block;text-align:center;text-decoration:none;font-weight:600;font-size:18px;background:var(--tinta);color:var(--papel);border-radius:8px;padding:15px 18px;margin:22px 0 10px}
+  .cta:hover{filter:brightness(1.1)}
+  .nota{font-size:14px;color:var(--suave);text-align:center;margin:0}
+  footer{margin-top:28px;padding-top:16px;border-top:1px solid var(--linea);font-size:14px;color:var(--suave);text-align:center}
+</style>
+</head>
+<body>
+<main>
+  <p class="eyebrow">Carta de presentación · Proyecto de ciencias</p>
+  <h1>Detector de fake news</h1>
+  <p class="lead">¿Quieres saber si lo que leíste es <strong>FALSO</strong>? Este proyecto te ayuda a comprobarlo en segundos.</p>
+
+  <section class="card">
+    <h2>¿Qué es?</h2>
+    <p>Una página web que analiza una afirmación y estima si es <b>verdadera</b>, <b>falsa</b> o <b>dudosa</b>. Además explica en qué se basa y muestra las fuentes que consultó.</p>
+    <div class="medidor" aria-hidden="true"><span class="f">Falsa</span><span class="d">Dudosa</span><span class="v">Verdadera</span></div>
+  </section>
+
+  <section class="card">
+    <h2>¿Por qué este proyecto?</h2>
+    <p>La desinformación circula muy rápido por redes sociales y WhatsApp, y verificar un dato lleva tiempo. El objetivo es ofrecer una herramienta simple para revisar la información <b>antes</b> de creerla o compartirla.</p>
+  </section>
+
+  <section class="card">
+    <h2>¿Cómo funciona?</h2>
+    <ol>
+      <li>Escribís una afirmación, de hasta 500 caracteres.</li>
+      <li>Una inteligencia artificial busca información en la web.</li>
+      <li>Un medidor de 0 a 100 indica el veredicto y explica por qué.</li>
+    </ol>
+  </section>
+
+  <section class="card">
+    <h2>¿Con qué está hecho?</h2>
+    <div class="tags"><span>HTML · CSS · JavaScript</span><span>Netlify</span><span>API de Claude</span><span>Búsqueda web</span><span>GitHub</span></div>
+  </section>
+
+  <section class="card">
+    <h2>Importante</h2>
+    <p>La herramienta puede equivocarse, sobre todo con noticias muy nuevas o locales. Por eso siempre muestra sus razones: revisá las fuentes antes de dar algo por cierto.</p>
+  </section>
+
+  <a class="cta" href="/">Probar el verificador →</a>
+  <p class="nota">verificador-de-afirmaciones.netlify.app</p>
+
+  <footer>Colegio de San José · MUESCIENTEC · Asunción</footer>
+</main>
+</body>
+</html>
